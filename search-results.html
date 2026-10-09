@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دارومپ | نتایج جستجوی دارو و داروخانه‌ها</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vazirmatn Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <a href="index.html" class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white text-xl font-black shadow-md shadow-brand-500/20">
+                            <i class="fa-solid fa-notes-medical"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-black text-slate-800 tracking-tight">دارو<span class="text-brand-600">مپ</span></span>
+                            <span class="text-xs text-slate-400 -mt-1 font-medium">DaruMap</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-8 space-x-reverse font-medium text-slate-600">
+                    <a href="index.html" class="hover:text-brand-600 transition">صفحه اصلی</a>
+                    <a href="search-results.html" class="text-brand-600 font-bold border-b-2 border-brand-600 pb-1">جستجوی داروخانه</a>
+                    <a href="index.html#prescription-upload" class="hover:text-brand-600 transition">ارسال نسخه</a>
+                    <a href="dashboard.html" class="hover:text-brand-600 transition">پنل داروخانه‌ها</a>
+                </nav>
+
+                <!-- Desktop CTA buttons -->
+                <div class="hidden md:flex items-center gap-3">
+                    <a href="dashboard.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-clinic-medical text-brand-600"></i>
+                        <span>ورود داروخانه‌ها</span>
+                    </a>
+                    <a href="index.html#prescription-upload" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-lg shadow-brand-600/25 transition flex items-center gap-2">
+                        <i class="fa-solid fa-file-prescription"></i>
+                        <span>ثبت سریع نسخه</span>
+                    </a>
+                </div>
+
+                <!-- Mobile menu hamburger button -->
+                <div class="md:hidden flex items-center">
+                    <button id="drawer-toggle-btn" class="p-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 focus:outline-none transition">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu Overlay -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Mobile Drawer Menu -->
+    <aside id="drawer-menu" class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between">
+        <div class="p-5">
+            <div class="flex items-center justify-between pb-5 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white text-lg font-bold">
+                        <i class="fa-solid fa-notes-medical"></i>
+                    </div>
+                    <span class="text-xl font-bold text-slate-800">دارو<span class="text-brand-600">مپ</span></span>
+                </div>
+                <button id="drawer-close-btn" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <nav class="mt-6 flex flex-col space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition font-medium">
+                    <i class="fa-solid fa-house w-5 text-center text-slate-400"></i>
+                    <span>صفحه اصلی</span>
+                </a>
+                <a href="search-results.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-50 text-brand-700 font-bold">
+                    <i class="fa-solid fa-magnifying-glass-location w-5 text-center"></i>
+                    <span>جستجوی دارو و داروخانه</span>
+                </a>
+                <a href="index.html#prescription-upload" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition font-medium">
+                    <i class="fa-solid fa-file-prescription w-5 text-center text-slate-400"></i>
+                    <span>ارسال عکس نسخه</span>
+                </a>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition font-medium">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-slate-400"></i>
+                    <span>پنل مدیریت داروخانه</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-5 border-t border-slate-100 space-y-3">
+            <a href="dashboard.html" class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition">
+                <i class="fa-solid fa-clinic-medical text-brand-600"></i>
+                <span>ورود داروسازان</span>
+            </a>
+            <a href="index.html#prescription-upload" class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl bg-brand-600 text-white font-semibold shadow-md shadow-brand-600/20 hover:bg-brand-700 transition">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>آپلود نسخه بیمار</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Header Search Banner Bar -->
+    <div class="bg-gradient-to-r from-slate-900 to-brand-900 text-white py-8 px-4 sm:px-6 lg:px-8 shadow-md">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl sm:text-3xl font-black mb-4">نتایج استعلام موجودی داروخانه</h1>
+            <form id="filter-search-form" class="grid grid-cols-1 md:grid-cols-12 gap-3 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+                <div class="md:col-span-4">
+                    <select id="city-filter" class="w-full bg-slate-800 text-white border border-slate-700 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="all">همه شهرستان‌ها (ورامین، پیشوا، قرچک)</option>
+                        <option value="varamin">شهرستان ورامین</option>
+                        <option value="pishva">شهرستان پیشوا</option>
+                        <option value="qarchak">شهرستان قرچک</option>
+                    </select>
+                </div>
+                <div class="md:col-span-6">
+                    <input type="text" id="keyword-filter" placeholder="نام دارو یا نام داروخانه را وارد کنید..." value="انسولین" class="w-full bg-slate-800 text-white border border-slate-700 rounded-xl py-2.5 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder-slate-400">
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-filter"></i>
+                        <span>اعمال فیلتر</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content Body -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+            <!-- Sidebar Filters -->
+            <aside class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center pb-4 border-b border-slate-100 mb-4">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-brand-600"></i>
+                            <span>فیلترهای پیشرفته</span>
+                        </h3>
+                        <button id="reset-filters-btn" class="text-xs text-brand-600 font-semibold hover:underline">بازنشانی</button>
+                    </div>
+
+                    <!-- City Radio -->
+                    <div class="mb-5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">انتخاب شهرستان</label>
+                        <div class="space-y-2 text-sm text-slate-700">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="side_city" value="all" checked class="text-brand-600 focus:ring-brand-500">
+                                <span>همه مناطق</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="side_city" value="varamin" class="text-brand-600 focus:ring-brand-500">
+                                <span>ورامین (Varamin)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="side_city" value="pishva" class="text-brand-600 focus:ring-brand-500">
+                                <span>پیشوا (Pishva)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="side_city" value="qarchak" class="text-brand-600 focus:ring-brand-500">
+                                <span>قرچک (Qarchak)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Stock Status Checkbox -->
+                    <div class="mb-5 border-t border-slate-100 pt-4">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">وضعیت موجودی دارو</label>
+                        <div class="space-y-2 text-sm text-slate-700">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filter-in-stock" checked class="rounded text-brand-600 focus:ring-brand-500">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <span>موجود در انبار</span>
+                                </span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filter-low-stock" checked class="rounded text-brand-600 focus:ring-brand-500">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                    <span>موجودی محدود (کم)</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Working Hours Filter -->
+                    <div class="border-t border-slate-100 pt-4">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">ساعات کاری</label>
+                        <div class="space-y-2 text-sm text-slate-700">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filter-24h" class="rounded text-brand-600 focus:ring-brand-500">
+                                <span>فقط داروخانه‌های شبانه‌روزی (۲۴ ساعته)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filter-open-now" class="rounded text-brand-600 focus:ring-brand-500">
+                                <span>هم‌اکنون باز است</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Banner -->
+                <div class="bg-gradient-to-br from-brand-600 to-teal-700 rounded-2xl p-5 text-white shadow-md">
+                    <i class="fa-solid fa-headset text-3xl mb-3 text-brand-200"></i>
+                    <h4 class="font-bold text-lg mb-1">داروی نایاب پیدا نکردید؟</h4>
+                    <p class="text-xs text-brand-100 leading-relaxed mb-4">کارشناسان پشتیبانی دارومپ به صورت رایگان استعلام داروهای خاص را برای شما انجام می‌دهند.</p>
+                    <a href="index.html#prescription-upload" class="inline-block w-full text-center bg-white text-brand-800 font-bold text-xs py-2.5 px-4 rounded-xl hover:bg-brand-50 transition">
+                        ثبت درخواست تلفنی / متنی
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Results Listing Section -->
+            <section class="lg:col-span-3 space-y-4">
+
+                <!-- Results Bar Header -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <div class="text-sm font-semibold text-slate-700">
+                        نمایش <span id="results-count" class="font-black text-brand-600">۵</span> داروخانه برای عبارت جستجو
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <span>مرتب‌سازی براساس:</span>
+                        <select id="sort-order" class="bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-3 text-slate-700 font-semibold focus:outline-none">
+                            <option value="nearest">نزدیک‌ترین فاصله</option>
+                            <option value="availability">حداکثر موجودی</option>
+                            <option value="rating">بالاترین امتیاز</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Pharmacy Listing Cards Container -->
+                <div id="pharmacy-cards-list" class="space-y-4">
+
+                    <!-- Card 1 (Varamin - In Stock - 24/7) -->
+                    <div class="pharmacy-card bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition" data-city="varamin" data-stock="in_stock" data-24h="true">
+                        <div class="flex flex-col md:flex-row justify-between md:items-start gap-4">
+                            <div class="space-y-3 flex-grow">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="bg-brand-100 text-brand-700 text-xs font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-clock"></i> شبانه‌روزی (۲۴/۷)
+                                    </span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-lg">
+                                        <i class="fa-solid fa-location-dot text-brand-600 ml-1"></i> ورامین
+                                    </span>
+                                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-check-circle"></i> موجود در انبار
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">داروخانه شبانه‌روزی دکتر افشار</h2>
+                                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-map-pin text-slate-400"></i>
+                                        ورامین، خیابان شهدا، روبروی بیمارستان شهید مفتح
+                                    </p>
+                                </div>
+
+                                <!-- Drug items matched -->
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1.5">
+                                    <div class="font-bold text-slate-700 flex items-center gap-1">
+                                        <i class="fa-solid fa-capsules text-brand-600"></i> وضعیت موجودی داروی درخواستی:
+                                    </div>
+                                    <div class="flex justify-between items-center text-slate-600">
+                                        <span>انسولین قلمی نوورپید (FlexPen)</span>
+                                        <span class="text-emerald-600 font-bold"><i class="fa-solid fa-square-check ml-1"></i>موجود (تأیید سیستم)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[160px] justify-center">
+                                <a href="tel:02136241111" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span>تماس با داروخانه</span>
+                                </a>
+                                <button type="button" onclick="alert('موقعیت روی نقشه: ورامین، خیابان شهدا')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-route text-brand-600"></i>
+                                    <span>مسیریابی هوشمند</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Footer Meta -->
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-400 gap-2">
+                            <span>آخرین به‌روزرسانی موجودی: ۱۰ دقیقه پیش</span>
+                            <span class="text-slate-600 font-medium">شماره تماس: ۰۲۱-۳۶۲۴۱۱۱۱</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 (Pishva - In Stock - Regular Hours) -->
+                    <div class="pharmacy-card bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition" data-city="pishva" data-stock="in_stock" data-24h="false">
+                        <div class="flex flex-col md:flex-row justify-between md:items-start gap-4">
+                            <div class="space-y-3 flex-grow">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-clock text-amber-500"></i> ۰۸:۰۰ الی ۲۲:۰۰
+                                    </span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-lg">
+                                        <i class="fa-solid fa-location-dot text-brand-600 ml-1"></i> پیشوا
+                                    </span>
+                                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-check-circle"></i> موجود در انبار
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">داروخانه دکتر حسینی</h2>
+                                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-map-pin text-slate-400"></i>
+                                        پیشوا، میدان امام خمینی، ابتدای خیابان شریعتی
+                                    </p>
+                                </div>
+
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1.5">
+                                    <div class="font-bold text-slate-700 flex items-center gap-1">
+                                        <i class="fa-solid fa-capsules text-brand-600"></i> وضعیت موجودی داروی درخواستی:
+                                    </div>
+                                    <div class="flex justify-between items-center text-slate-600">
+                                        <span>انسولین لانتوس (Lantus SoloStar)</span>
+                                        <span class="text-emerald-600 font-bold"><i class="fa-solid fa-square-check ml-1"></i>موجود</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[160px] justify-center">
+                                <a href="tel:02136722222" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span>تماس با داروخانه</span>
+                                </a>
+                                <button type="button" onclick="alert('موقعیت روی نقشه: پیشوا، میدان امام خمینی')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-route text-brand-600"></i>
+                                    <span>مسیریابی هوشمند</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-400 gap-2">
+                            <span>آخرین به‌روزرسانی موجودی: ۳۰ دقیقه پیش</span>
+                            <span class="text-slate-600 font-medium">شماره تماس: ۰۲۱-۳۶۷۲۲۲۲۲</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 (Qarchak - Low Stock - 24/7) -->
+                    <div class="pharmacy-card bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition" data-city="qarchak" data-stock="low_stock" data-24h="true">
+                        <div class="flex flex-col md:flex-row justify-between md:items-start gap-4">
+                            <div class="space-y-3 flex-grow">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="bg-brand-100 text-brand-700 text-xs font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-clock"></i> شبانه‌روزی (۲۴/۷)
+                                    </span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-lg">
+                                        <i class="fa-solid fa-location-dot text-brand-600 ml-1"></i> قرچک
+                                    </span>
+                                    <span class="bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> موجودی محدود (کم)
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">داروخانه شبانه‌روزی دکتر ستاری (قرچک)</h2>
+                                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-map-pin text-slate-400"></i>
+                                        قرچک، خیابان اصلی، جنب بیمارستان شهید ستاری
+                                    </p>
+                                </div>
+
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1.5">
+                                    <div class="font-bold text-slate-700 flex items-center gap-1">
+                                        <i class="fa-solid fa-capsules text-brand-600"></i> وضعیت موجودی داروی درخواستی:
+                                    </div>
+                                    <div class="flex justify-between items-center text-slate-600">
+                                        <span>انسولین نوورپید</span>
+                                        <span class="text-amber-600 font-bold"><i class="fa-solid fa-circle-exclamation ml-1"></i>تعداد محدود باقی‌مانده</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[160px] justify-center">
+                                <a href="tel:02136133333" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span>تماس رزرو دارو</span>
+                                </a>
+                                <button type="button" onclick="alert('موقعیت روی نقشه: قرچک، جنب بیمارستان ستاری')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-route text-brand-600"></i>
+                                    <span>مسیریابی هوشمند</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-400 gap-2">
+                            <span>آخرین به روزرسانی موجودی: ۵ دقیقه پیش</span>
+                            <span class="text-slate-600 font-medium">شماره تماس: ۰۲۱-۳۶۱۳۳۳۳۳</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 (Varamin - In Stock) -->
+                    <div class="pharmacy-card bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition" data-city="varamin" data-stock="in_stock" data-24h="false">
+                        <div class="flex flex-col md:flex-row justify-between md:items-start gap-4">
+                            <div class="space-y-3 flex-grow">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-clock text-amber-500"></i> ۰۹:۰۰ الی ۲۱:۰۰
+                                    </span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-lg">
+                                        <i class="fa-solid fa-location-dot text-brand-600 ml-1"></i> ورامین
+                                    </span>
+                                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-check-circle"></i> موجود در انبار
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">داروخانه دکتر کریمی</h2>
+                                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-map-pin text-slate-400"></i>
+                                        ورامین، خیابان طالقانی، نرسیده به میدان راه‌آهن
+                                    </p>
+                                </div>
+
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1.5">
+                                    <div class="font-bold text-slate-700 flex items-center gap-1">
+                                        <i class="fa-solid fa-capsules text-brand-600"></i> وضعیت موجودی داروی درخواستی:
+                                    </div>
+                                    <div class="flex justify-between items-center text-slate-600">
+                                        <span>انسولین همولوگ (Humalog)</span>
+                                        <span class="text-emerald-600 font-bold"><i class="fa-solid fa-square-check ml-1"></i>موجود</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[160px] justify-center">
+                                <a href="tel:02136254444" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span>تماس با داروخانه</span>
+                                </a>
+                                <button type="button" onclick="alert('موقعیت روی نقشه: ورامین، خیابان طالقانی')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-route text-brand-600"></i>
+                                    <span>مسیریابی هوشمند</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-400 gap-2">
+                            <span>آخرین به‌روزرسانی موجودی: ۱ ساعت پیش</span>
+                            <span class="text-slate-600 font-medium">شماره تماس: ۰۲۱-۳۶۲۵۴۴۴۴</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 5 (Qarchak - In Stock) -->
+                    <div class="pharmacy-card bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition" data-city="qarchak" data-stock="in_stock" data-24h="false">
+                        <div class="flex flex-col md:flex-row justify-between md:items-start gap-4">
+                            <div class="space-y-3 flex-grow">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-clock text-amber-500"></i> ۰۸:۳۰ الی ۲۱:۳۰
+                                    </span>
+                                    <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-lg">
+                                        <i class="fa-solid fa-location-dot text-brand-600 ml-1"></i> قرچک
+                                    </span>
+                                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                        <i class="fa-solid fa-check-circle"></i> موجود در انبار
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">داروخانه دکتر محمدی (قرچک - زیباشهر)</h2>
+                                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-map-pin text-slate-400"></i>
+                                        قرچک، زیباشهر، 12 متری اصلی، پلاک 42
+                                    </p>
+                                </div>
+
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1.5">
+                                    <div class="font-bold text-slate-700 flex items-center gap-1">
+                                        <i class="fa-solid fa-capsules text-brand-600"></i> وضعیت موجودی داروی درخواستی:
+                                    </div>
+                                    <div class="flex justify-between items-center text-slate-600">
+                                        <span>انسولین قلمی لانتوس</span>
+                                        <span class="text-emerald-600 font-bold"><i class="fa-solid fa-square-check ml-1"></i>موجود</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[160px] justify-center">
+                                <a href="tel:02136155555" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span>تماس با داروخانه</span>
+                                </a>
+                                <button type="button" onclick="alert('موقعیت روی نقشه: قرچک، زیباشهر')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-route text-brand-600"></i>
+                                    <span>مسیریابی هوشمند</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-400 gap-2">
+                            <span>آخرین به‌روزرسانی موجودی: ۴۵ دقیقه پیش</span>
+                            <span class="text-slate-600 font-medium">شماره تماس: ۰۲۱-۳۶۱۵۵۵۵۵</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- No Results Empty State Message -->
+                <div id="no-results-msg" class="hidden bg-white rounded-2xl p-12 text-center border border-slate-200">
+                    <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto text-2xl mb-4">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">داروخانه‌ای با مشخصات انتخابی یافت نشد</h3>
+                    <p class="text-slate-500 text-sm max-w-md mx-auto mb-6">لطفا فیلترهای جستجو مانند شهر یا ساعات کاری را تغییر دهید یا درخواست نسخه خود را برای استعلام کلی ثبت کنید.</p>
+                    <a href="index.html#prescription-upload" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl transition inline-flex items-center gap-2">
+                        <i class="fa-solid fa-file-prescription"></i>
+                        <span>ثبت و ارسال عکس نسخه</span>
+                    </a>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 pt-12 pb-6 border-t border-slate-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-white font-black text-xl">
+                        <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white text-base">
+                            <i class="fa-solid fa-notes-medical"></i>
+                        </div>
+                        <span>دارو<span class="text-brand-500">مپ</span></span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        سامانه هوشمند اطلاع‌رسانی داروخانه‌ها و استعلام موجودی دارو در ورامین، پیشوا و قرچک.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3">دسترسی سریع</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="index.html" class="hover:text-brand-400 transition">صفحه اصلی</a></li>
+                        <li><a href="search-results.html" class="hover:text-brand-400 transition">جستجوی داروخانه‌ها</a></li>
+                        <li><a href="index.html#prescription-upload" class="hover:text-brand-400 transition">ثبت نسخه اینترنتی</a></li>
+                        <li><a href="dashboard.html" class="hover:text-brand-400 transition">پنل اختصاصی داروسازان</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3">مناطق خدمت‌رسانی</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="search-results.html?city=varamin" class="hover:text-brand-400 transition">داروخانه‌های ورامین</a></li>
+                        <li><a href="search-results.html?city=pishva" class="hover:text-brand-400 transition">داروخانه‌های پیشوا</a></li>
+                        <li><a href="search-results.html?city=qarchak" class="hover:text-brand-400 transition">داروخانه‌های قرچک</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3">ارتباط با پشتیبانی</h4>
+                    <p class="text-xs mb-2"><i class="fa-solid fa-phone text-brand-500 ml-1"></i> ۰۲۱-۳۶۲۴۰۰۰۰</p>
+                    <p class="text-xs mb-2"><i class="fa-solid fa-envelope text-brand-500 ml-1"></i> info@darumap.ir</p>
+                    <p class="text-xs"><i class="fa-solid fa-location-dot text-brand-500 ml-1"></i> ورامین، میدان امام، مجتمع درمانی دارومپ</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-3">
+                <p>© ۲۰۲۵ دارومپ (DaruMap). تمامی حقوق محفوظ است.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-slate-300">قوانین و مقررات</a>
+                    <a href="#" class="hover:text-slate-300">حریم خصوصی</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Filtering JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Drawer Logic
+            const toggleBtn = document.getElementById('drawer-toggle-btn');
+            const closeBtn = document.getElementById('drawer-close-btn');
+            const drawerMenu = document.getElementById('drawer-menu');
+            const drawerOverlay = document.getElementById('drawer-overlay');
+
+            function openDrawer() {
+                drawerMenu.classList.remove('translate-x-full');
+                drawerOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                document.body.classList.add('overflow-hidden');
+            }
+
+            function closeDrawer() {
+                drawerMenu.classList.add('translate-x-full');
+                drawerOverlay.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', openDrawer);
+            if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+            if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+            // Read URL Params on load
+            const urlParams = new URLSearchParams(window.location.search);
+            const cityParam = urlParams.get('city');
+            const queryParam = urlParams.get('query');
+
+            if (cityParam) {
+                const citySelect = document.getElementById('city-filter');
+                if (citySelect) citySelect.value = cityParam;
+
+                const sideCityRadio = document.querySelector(`input[name="side_city"][value="${cityParam}"]`);
+                if (sideCityRadio) sideCityRadio.checked = true;
+            }
+
+            if (queryParam !== null) {
+                const queryInput = document.getElementById('keyword-filter');
+                if (queryInput) queryInput.value = queryParam;
+            }
+
+            // Filtering Logic
+            const cards = document.querySelectorAll('.pharmacy-card');
+            const sideCityRadios = document.querySelectorAll('input[name="side_city"]');
+            const inStockCheckbox = document.getElementById('filter-in-stock');
+            const lowStockCheckbox = document.getElementById('filter-low-stock');
+            const h24Checkbox = document.getElementById('filter-24h');
+            const resultsCount = document.getElementById('results-count');
+            const noResultsMsg = document.getElementById('no-results-msg');
+            const resetBtn = document.getElementById('reset-filters-btn');
+            const filterForm = document.getElementById('filter-search-form');
+
+            function applyFilters() {
+                let selectedCity = document.querySelector('input[name="side_city"]:checked')?.value || 'all';
+                const showInStock = inStockCheckbox.checked;
+                const showLowStock = lowStockCheckbox.checked;
+                const only24h = h24Checkbox.checked;
+
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    const cardCity = card.getAttribute('data-city');
+                    const cardStock = card.getAttribute('data-stock');
+                    const card24h = card.getAttribute('data-24h') === 'true';
+
+                    let matchCity = (selectedCity === 'all' || cardCity === selectedCity);
+                    let matchStock = false;
+                    if (cardStock === 'in_stock' && showInStock) matchStock = true;
+                    if (cardStock === 'low_stock' && showLowStock) matchStock = true;
+
+                    let match24h = !only24h || card24h;
+
+                    if (matchCity && matchStock && match24h) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                if (resultsCount) resultsCount.textContent = visibleCount;
+                if (noResultsMsg) {
+                    if (visibleCount === 0) {
+                        noResultsMsg.classList.remove('hidden');
+                    } else {
+                        noResultsMsg.classList.add('hidden');
+                    }
+                }
+            }
+
+            // Bind Event Listeners
+            sideCityRadios.forEach(radio => radio.addEventListener('change', applyFilters));
+            if (inStockCheckbox) inStockCheckbox.addEventListener('change', applyFilters);
+            if (lowStockCheckbox) lowStockCheckbox.addEventListener('change', applyFilters);
+            if (h24Checkbox) h24Checkbox.addEventListener('change', applyFilters);
+
+            if (filterForm) {
+                filterForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const topCity = document.getElementById('city-filter').value;
+                    const sideRadio = document.querySelector(`input[name="side_city"][value="${topCity}"]`);
+                    if (sideRadio) sideRadio.checked = true;
+                    applyFilters();
+                });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    document.querySelector('input[name="side_city"][value="all"]').checked = true;
+                    if (inStockCheckbox) inStockCheckbox.checked = true;
+                    if (lowStockCheckbox) lowStockCheckbox.checked = true;
+                    if (h24Checkbox) h24Checkbox.checked = false;
+                    const citySelect = document.getElementById('city-filter');
+                    if (citySelect) citySelect.value = 'all';
+                    applyFilters();
+                });
+            }
+
+            // Initial filter run
+            applyFilters();
+        });
+    </script>
+</body>
+</html>

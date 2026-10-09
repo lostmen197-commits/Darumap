@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دارومپ (DaruMap) | سامانه هوشمند جستجوی دارو و داروخانه‌ها</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vazirmatn Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <a href="index.html" class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white text-xl font-black shadow-md shadow-brand-500/20">
+                            <i class="fa-solid font-bold fa-notes-medical"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-black text-slate-800 tracking-tight">دارو<span class="text-brand-600">مپ</span></span>
+                            <span class="text-xs text-slate-400 -mt-1 font-medium">DaruMap</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-8 space-x-reverse font-medium text-slate-600">
+                    <a href="index.html" class="text-brand-600 font-bold border-b-2 border-brand-600 pb-1">صفحه اصلی</a>
+                    <a href="search-results.html" class="hover:text-brand-600 transition">جستجوی داروخانه</a>
+                    <a href="#prescription-upload" class="hover:text-brand-600 transition">ارسال نسخه</a>
+                    <a href="dashboard.html" class="hover:text-brand-600 transition">پنل داروخانه‌ها</a>
+                </nav>
+
+                <!-- Desktop CTA buttons -->
+                <div class="hidden md:flex items-center gap-3">
+                    <a href="dashboard.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-clinic-medical text-brand-600"></i>
+                        <span>ورود داروخانه‌ها</span>
+                    </a>
+                    <a href="#prescription-upload" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-lg shadow-brand-600/25 transition flex items-center gap-2">
+                        <i class="fa-solid fa-file-prescription"></i>
+                        <span>ثبت سریع نسخه</span>
+                    </a>
+                </div>
+
+                <!-- Mobile menu hamburger button -->
+                <div class="md:hidden flex items-center">
+                    <button id="drawer-toggle-btn" class="p-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 focus:outline-none transition" aria-label="منو">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu Overlay -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Mobile Drawer Menu Container -->
+    <aside id="drawer-menu" class="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between">
+        <div class="p-5">
+            <div class="flex items-center justify-between pb-5 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white text-lg font-bold">
+                        <i class="fa-solid fa-notes-medical"></i>
+                    </div>
+                    <span class="text-xl font-bold text-slate-800">دارو<span class="text-brand-600">مپ</span></span>
+                </div>
+                <button id="drawer-close-btn" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <nav class="mt-6 flex flex-col space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-50 text-brand-700 font-bold">
+                    <i class="fa-solid fa-house w-5 text-center"></i>
+                    <span>صفحه اصلی</span>
+                </a>
+                <a href="search-results.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition font-medium">
+                    <i class="fa-solid fa-magnifying-glass-location w-5 text-center text-slate-400"></i>
+                    <span>جستجوی دارو و داروخانه</span>
+                </a>
+                <a href="#prescription-upload" class="drawer-nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition font-medium">
+                    <i class="fa-solid fa-file-prescription w-5 text-center text-slate-400"></i>
+                    <span>ارسال عکس نسخه</span>
+                </a>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition font-medium">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-slate-400"></i>
+                    <span>پنل مدیریت داروخانه</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-5 border-t border-slate-100 space-y-3">
+            <a href="dashboard.html" class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition">
+                <i class="fa-solid fa-clinic-medical text-brand-600"></i>
+                <span>ورود داروسازان</span>
+            </a>
+            <a href="#prescription-upload" class="drawer-nav-link w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl bg-brand-600 text-white font-semibold shadow-md shadow-brand-600/20 hover:bg-brand-700 transition">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>آپلود نسخه بیمار</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <!-- Hero & Smart Search Section -->
+        <section class="relative bg-gradient-to-b from-emerald-900 via-brand-800 to-slate-900 text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+            <!-- Background Decorative Elements -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute top-1/2 -right-24 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-5xl mx-auto text-center relative z-10">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-medium mb-6 text-brand-200">
+                    <span class="flex h-2 w-2 rounded-full bg-brand-400 animate-pulse"></span>
+                    پوشش جامع داروخانه‌های ورامین، پیشوا و قرچک
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl font-black leading-tight tracking-tight mb-6">
+                    یافتن سریع داروی کمیاب در نزدیک‌ترین داروخانه
+                </h1>
+                <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+                    با <span class="text-brand-300 font-bold">دارومپ</span> می‌توانید موجودی دارو، ساعات کاری و آدرس دقیق تمامی داروخانه‌های دشت ورامین (ورامین، پیشوا و قرچک) را به صورت هوشمند و آنی استعلام کنید.
+                </p>
+
+                <!-- Smart Search Bar -->
+                <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-2xl max-w-4xl mx-auto text-slate-800 border border-slate-100">
+                    <form action="search-results.html" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                        <!-- City Selector -->
+                        <div class="md:col-span-4 relative">
+                            <label class="block text-xs font-bold text-slate-400 mb-1 text-right px-1">انتخاب شهر / منطقه</label>
+                            <div class="relative">
+                                <select name="city" id="search-city" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 pr-10 text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500 appearance-none">
+                                    <option value="all">همه شهرها (ورامین، پیشوا، قرچک)</option>
+                                    <option value="varamin">ورامین (Varamin)</option>
+                                    <option value="pishva">پیشوا (Pishva)</option>
+                                    <option value="qarchak">قرچک (Qarchak)</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-brand-600">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Drug or Pharmacy Name Input -->
+                        <div class="md:col-span-5 relative">
+                            <label class="block text-xs font-bold text-slate-400 mb-1 text-right px-1">نام دارو یا داروخانه</label>
+                            <div class="relative">
+                                <input type="text" name="query" id="search-query" placeholder="مثلاً: انسولین قلمی، پنسيلين، داروخانه دکتر افشار..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 pr-10 text-slate-800 font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-pills text-brand-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="md:col-span-3 flex items-end">
+                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span>جستجوی آنلاین</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Fast Quick Search Tags -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                        <span class="font-bold text-slate-600 flex items-center gap-1">
+                            <i class="fa-solid fa-fire text-amber-500"></i> جستجوهای پرتکرار:
+                        </span>
+                        <a href="search-results.html?query=انسولین&city=all" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-700 px-3 py-1 rounded-lg transition font-medium">انسولین نوورپید</a>
+                        <a href="search-results.html?query=شبانه‌روزی&city=varamin" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-700 px-3 py-1 rounded-lg transition font-medium">داروخانه شبانه‌روزی ورامین</a>
+                        <a href="search-results.html?query=شیرخشک&city=pishva" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-700 px-3 py-1 rounded-lg transition font-medium">شیرخشک آپتامیل (پیشوا)</a>
+                        <a href="search-results.html?query=قرچک&city=qarchak" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-700 px-3 py-1 rounded-lg transition font-medium">داروخانه‌های قرچک</a>
+                    </div>
+                </div>
+
+                <!-- Stats summary -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 max-w-4xl mx-auto text-right">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                        <div class="text-2xl sm:text-3xl font-black text-brand-300">۴۵+</div>
+                        <div class="text-xs sm:text-sm text-slate-300 mt-1">داروخانه فعال دشت ورامین</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                        <div class="text-2xl sm:text-3xl font-black text-brand-300">۱۰۰٪</div>
+                        <div class="text-xs sm:text-sm text-slate-300 mt-1">استعلام زنده موجودی</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                        <div class="text-2xl sm:text-3xl font-black text-brand-300">۳ شهر</div>
+                        <div class="text-xs sm:text-sm text-slate-300 mt-1">ورامین، پیشوا و قرچک</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                        <div class="text-2xl sm:text-3xl font-black text-brand-300">۲۴/۷</div>
+                        <div class="text-xs sm:text-sm text-slate-300 mt-1">پاسخگویی به نسخ ارسالی</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-3">چگونه از دارومپ استفاده کنیم؟</h2>
+                    <p class="text-slate-500">در سه مرحله ساده، بدون نیاز به مراجعه حضوری و اتلاف وقت، داروی خود را پیدا کنید.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Step 1 -->
+                    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 text-center relative hover:shadow-lg transition group">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center text-2xl font-black mx-auto mb-5 group-hover:scale-110 transition-transform">
+                            ۱
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-2">جستجو یا آپلود نسخه</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            نام داروی مورد نظر خود را جستجو کنید یا تصویر نسخه خود را با فرمت عکس در سامانه بارگذاری نمایید.
+                        </p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 text-center relative hover:shadow-lg transition group">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center text-2xl font-black mx-auto mb-5 group-hover:scale-110 transition-transform">
+                            ۲
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-2">بررسی موجودی داروخانه‌ها</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            داروخانه‌های ورامین، پیشوا و قرچک موجودی نسخه شما را بررسی کرده و اعلام آمادگی می‌کنند.
+                        </p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 text-center relative hover:shadow-lg transition group">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center text-2xl font-black mx-auto mb-5 group-hover:scale-110 transition-transform">
+                            ۳
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-2">دریافت حضوری یا ارسال</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">
+                            به نزدیک‌ترین داروخانه دارای دارو مراجعه کنید یا سفارش خود را درب منزل تحویل بگیرید.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prescription Upload Section -->
+        <section id="prescription-upload" class="py-16 bg-slate-100 relative">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+                    <div class="bg-gradient-to-r from-brand-700 to-brand-600 p-6 sm:p-8 text-white text-center sm:text-right flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-black mb-2 flex items-center gap-2 justify-center sm:justify-start">
+                                <i class="fa-solid fa-file-medical"></i>
+                                <span>سامانه هوشمند ثبت و آپلود نسخه</span>
+                            </h2>
+                            <p class="text-brand-100 text-sm">نسخه کاغذی یا الکترونیکی خود را آپلود کنید تا داروخانه‌های اطراف پاسخ دهند.</p>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-semibold border border-white/20">
+                            استعلام رایگان
+                        </span>
+                    </div>
+
+                    <form id="upload-form" class="p-6 sm:p-8 space-y-6">
+                        <!-- City Selection for Prescription -->
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">شهر مقصد جهت استعلام نسخه *</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="relative flex items-center justify-center p-3 rounded-xl border-2 border-slate-200 cursor-pointer text-slate-700 hover:border-brand-500 font-medium transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/50 has-[:checked]:text-brand-700">
+                                    <input type="radio" name="rx_city" value="varamin" class="sr-only" checked>
+                                    <span>ورامین</span>
+                                </label>
+                                <label class="relative flex items-center justify-center p-3 rounded-xl border-2 border-slate-200 cursor-pointer text-slate-700 hover:border-brand-500 font-medium transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/50 has-[:checked]:text-brand-700">
+                                    <input type="radio" name="rx_city" value="pishva" class="sr-only">
+                                    <span>پیشوا</span>
+                                </label>
+                                <label class="relative flex items-center justify-center p-3 rounded-xl border-2 border-slate-200 cursor-pointer text-slate-700 hover:border-brand-500 font-medium transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/50 has-[:checked]:text-brand-700">
+                                    <input type="radio" name="rx_city" value="qarchak" class="sr-only">
+                                    <span>قرچک</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Drag and Drop Upload Area -->
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">تصویر نسخه یا کد رهگیری الکترونیک *</label>
+                            <div id="drop-zone" class="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center hover:border-brand-500 bg-slate-50/80 transition cursor-pointer relative">
+                                <input type="file" id="file-input" accept="image/*,.pdf" class="hidden">
+                                <div id="upload-prompt" class="space-y-3">
+                                    <div class="w-14 h-14 bg-brand-100 text-brand-600 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    </div>
+                                    <div class="text-sm text-slate-700">
+                                        <span class="font-bold text-brand-600">برای انتخاب فایل کلیک کنید</span> یا تصویر نسخه را بکشید و اینجا رها کنید
+                                    </div>
+                                    <p class="text-xs text-slate-400">فرمت‌های مجاز: JPG, PNG, WEBP (حداکثر حجم ۱۰ مگابایت)</p>
+                                </div>
+
+                                <!-- File Preview Box -->
+                                <div id="file-preview-container" class="hidden flex flex-col items-center gap-3">
+                                    <img id="image-preview" src="#" alt="پیش‌نمایش نسخه" class="max-h-48 rounded-xl border shadow-sm object-contain">
+                                    <div class="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                                        <i class="fa-solid fa-file-image text-brand-600"></i>
+                                        <span id="file-name-text">filename.jpg</span>
+                                    </div>
+                                    <button type="button" id="remove-file-btn" class="text-xs text-rose-600 font-bold hover:underline flex items-center gap-1">
+                                        <i class="fa-solid fa-trash"></i> حذف و انتخاب تصویر دیگر
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Optional Code / Notes -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">کد ملی / کد رهگیری نسخه الکترونیک (اختیاری)</label>
+                                <input type="text" placeholder="مثلا: 0421234567" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">شماره همراه جهت دریافت پاسخ *</label>
+                                <input type="tel" required placeholder="مثلا: 09123456789" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">توضیحات تکمیلی (اختیاری)</label>
+                            <textarea rows="2" placeholder="تعداد، برند خاص یا توضیحات لازم درباره دارو..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div>
+                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2 text-base">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>ارسال نسخه به داروخانه‌های فعال منطقه</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Success Alert Modal / Box -->
+                    <div id="upload-success-alert" class="hidden p-6 bg-emerald-50 border-t border-emerald-200 text-center">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-3">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-emerald-800 mb-1">نسخه شما با موفقیت ثبت گردید!</h3>
+                        <p class="text-sm text-emerald-700 mb-4">اطلاعات نسخه برای داروخانه‌های فعال منطقه ارسال شد. وضعیت بررسی از طریق پیامک اطلاع‌رسانی خواهد شد.</p>
+                        <button type="button" id="reset-upload-btn" class="bg-emerald-600 text-white font-semibold text-xs px-4 py-2 rounded-lg hover:bg-emerald-700 transition">ثبت نسخه جدید</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cities Coverage Section -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-2">مناطق تحت پوشش دارومپ</h2>
+                        <p class="text-slate-500">پوشش لحظه‌ای داروخانه‌های شبانه‌روزی و روزانه دشت ورامین</p>
+                    </div>
+                    <a href="search-results.html" class="mt-4 md:mt-0 text-brand-600 font-bold hover:text-brand-700 inline-flex items-center gap-1">
+                        <span>مشاهده همه داروخانه‌ها</span>
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Varamin Card -->
+                    <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50/50 hover:border-brand-500 hover:shadow-xl transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-city"></i>
+                            </span>
+                            <span class="text-xs bg-brand-100 text-brand-700 font-bold px-2.5 py-1 rounded-md">۲۲ داروخانه</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">شهرستان ورامین</h3>
+                        <p class="text-slate-500 text-sm mb-4">پوشش خیابان شهدا، میدان امام، خیابان طالقانی و بیمارستان مفتح</p>
+                        <a href="search-results.html?city=varamin" class="text-brand-600 text-sm font-bold flex items-center gap-1 hover:underline">
+                            <span>جستجو در ورامین</span>
+                            <i class="fa-solid fa-angle-left text-xs"></i>
+                        </a>
+                    </div>
+
+                    <!-- Pishva Card -->
+                    <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50/50 hover:border-brand-500 hover:shadow-xl transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-building"></i>
+                            </span>
+                            <span class="text-xs bg-brand-100 text-brand-700 font-bold px-2.5 py-1 rounded-md">۱۲ داروخانه</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">شهرستان پیشوا</h3>
+                        <p class="text-slate-500 text-sm mb-4">پوشش خیابان امام خمینی، میدان شریعتی و مناطق دانشگاهی</p>
+                        <a href="search-results.html?city=pishva" class="text-brand-600 text-sm font-bold flex items-center gap-1 hover:underline">
+                            <span>جستجو در پیشوا</span>
+                            <i class="fa-solid fa-angle-left text-xs"></i>
+                        </a>
+                    </div>
+
+                    <!-- Qarchak Card -->
+                    <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50/50 hover:border-brand-500 hover:shadow-xl transition">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-hospital-user"></i>
+                            </span>
+                            <span class="text-xs bg-brand-100 text-brand-700 font-bold px-2.5 py-1 rounded-md">۱۵ داروخانه</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">شهرستان قرچک</h3>
+                        <p class="text-slate-500 text-sm mb-4">پوشش خیابان اصلی، زیباشهر، باقرآباد و بیمارستان ستاری</p>
+                        <a href="search-results.html?city=qarchak" class="text-brand-600 text-sm font-bold flex items-center gap-1 hover:underline">
+                            <span>جستجو در قرچک</span>
+                            <i class="fa-solid fa-angle-left text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 pt-12 pb-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-white font-black text-xl">
+                        <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white text-base">
+                            <i class="fa-solid fa-notes-medical"></i>
+                        </div>
+                        <span>دارو<span class="text-brand-500">مپ</span></span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        سامانه هوشمند اطلاع‌رسانی داروخانه‌ها و استعلام موجودی دارو در ورامین، پیشوا و قرچک.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3">دسترسی سریع</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="index.html" class="hover:text-brand-400 transition">صفحه اصلی</a></li>
+                        <li><a href="search-results.html" class="hover:text-brand-400 transition">جستجوی داروخانه‌ها</a></li>
+                        <li><a href="#prescription-upload" class="hover:text-brand-400 transition">ثبت نسخه اینترنتی</a></li>
+                        <li><a href="dashboard.html" class="hover:text-brand-400 transition">پنل اختصاصی داروسازان</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3">مناطق خدمت‌رسانی</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="search-results.html?city=varamin" class="hover:text-brand-400 transition">داروخانه‌های ورامین</a></li>
+                        <li><a href="search-results.html?city=pishva" class="hover:text-brand-400 transition">داروخانه‌های پیشوا</a></li>
+                        <li><a href="search-results.html?city=qarchak" class="hover:text-brand-400 transition">داروخانه‌های قرچک</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-3">ارتباط با پشتیبانی</h4>
+                    <p class="text-xs mb-2"><i class="fa-solid fa-phone text-brand-500 ml-1"></i> ۰۲۱-۳۶۲۴۰۰۰۰</p>
+                    <p class="text-xs mb-2"><i class="fa-solid fa-envelope text-brand-500 ml-1"></i> info@darumap.ir</p>
+                    <p class="text-xs"><i class="fa-solid fa-location-dot text-brand-500 ml-1"></i> ورامین، میدان امام، مجتمع درمانی دارومپ</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-3">
+                <p>© ۲۰۲۵ دارومپ (DaruMap). تمامی حقوق محفوظ است.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-slate-300">قوانین و مقررات</a>
+                    <a href="#" class="hover:text-slate-300">حریم خصوصی</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts for Mobile Drawer & File Upload -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Drawer Logic
+            const toggleBtn = document.getElementById('drawer-toggle-btn');
+            const closeBtn = document.getElementById('drawer-close-btn');
+            const drawerMenu = document.getElementById('drawer-menu');
+            const drawerOverlay = document.getElementById('drawer-overlay');
+            const drawerNavLinks = document.querySelectorAll('.drawer-nav-link');
+
+            function openDrawer() {
+                drawerMenu.classList.remove('translate-x-full');
+                drawerOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                document.body.classList.add('overflow-hidden');
+            }
+
+            function closeDrawer() {
+                drawerMenu.classList.add('translate-x-full');
+                drawerOverlay.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', openDrawer);
+            if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+            if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+            drawerNavLinks.forEach(link => link.addEventListener('click', closeDrawer));
+
+            // Prescription Upload Logic
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const uploadPrompt = document.getElementById('upload-prompt');
+            const previewContainer = document.getElementById('file-preview-container');
+            const imagePreview = document.getElementById('image-preview');
+            const fileNameText = document.getElementById('file-name-text');
+            const removeFileBtn = document.getElementById('remove-file-btn');
+            const uploadForm = document.getElementById('upload-form');
+            const uploadSuccessAlert = document.getElementById('upload-success-alert');
+            const resetUploadBtn = document.getElementById('reset-upload-btn');
+
+            if (dropZone && fileInput) {
+                dropZone.addEventListener('click', (e) => {
+                    if (e.target !== removeFileBtn && !removeFileBtn.contains(e.target)) {
+                        fileInput.click();
+                    }
+                });
+
+                fileInput.addEventListener('change', handleFileSelect);
+
+                // Drag & drop handlers
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('border-brand-500', 'bg-brand-50/30');
+                    }, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('border-brand-500', 'bg-brand-50/30');
+                    }, false);
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files.length) {
+                        fileInput.files = files;
+                        handleFileSelect();
+                    }
+                });
+            }
+
+            function handleFileSelect() {
+                if (fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    fileNameText.textContent = file.name;
+
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imagePreview.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        imagePreview.classList.add('hidden');
+                    }
+
+                    uploadPrompt.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
+                }
+            }
+
+            if (removeFileBtn) {
+                removeFileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fileInput.value = '';
+                    uploadPrompt.classList.remove('hidden');
+                    previewContainer.classList.add('hidden');
+                });
+            }
+
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    uploadForm.classList.add('hidden');
+                    uploadSuccessAlert.classList.remove('hidden');
+                });
+            }
+
+            if (resetUploadBtn) {
+                resetUploadBtn.addEventListener('click', () => {
+                    uploadForm.reset();
+                    fileInput.value = '';
+                    uploadPrompt.classList.remove('hidden');
+                    previewContainer.classList.add('hidden');
+                    uploadSuccessAlert.classList.add('hidden');
+                    uploadForm.classList.remove('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

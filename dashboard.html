@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت داروسازان | دارومپ (DaruMap)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vazirmatn Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Dashboard Top Header Nav -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Pharmacy Name -->
+                <div class="flex items-center gap-3">
+                    <a href="index.html" class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-white text-lg font-bold">
+                            <i class="fa-solid fa-notes-medical"></i>
+                        </div>
+                        <span class="text-xl font-extrabold tracking-tight">دارو<span class="text-brand-400">مپ</span></span>
+                    </a>
+                    <span class="hidden sm:inline-block text-slate-600">|</span>
+                    <span class="hidden sm:inline-flex items-center gap-1.5 text-xs bg-slate-800 border border-slate-700 px-3 py-1 rounded-full text-brand-300 font-semibold">
+                        <i class="fa-solid fa-clinic-medical"></i>
+                        داروخانه شبانه‌روزی دکتر افشار (ورامین)
+                    </span>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button class="p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition relative">
+                            <i class="fa-solid fa-bell text-lg"></i>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500"></span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-2 pl-2 border-r border-slate-800">
+                        <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold text-xs">
+                            د.ا
+                        </div>
+                        <span class="hidden md:inline-block text-xs font-semibold text-slate-200">دکتر افشار</span>
+                    </div>
+
+                    <a href="index.html" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>خروج</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
+
+        <!-- Welcome Banner -->
+        <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mb-2">پنل مدیریت داروخانه و سفارشات نسخه</h1>
+                <p class="text-slate-500 text-sm">مدیریت لحظه‌ای موجودی داروها، بررسی نسخه‌های ارسالی بیماران ورامین، پیشوا و قرچک</p>
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="openAddDrugModal()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition shadow-md shadow-brand-600/20 flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>افزودن داروی جدید به انبار</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Statistics Widgets -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Widget 1 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-400 block mb-1">نسخه‌های امروز</span>
+                    <span id="stat-total-rx" class="text-2xl font-black text-slate-900">۱۸</span>
+                    <span class="text-xs text-emerald-600 font-semibold block mt-1"><i class="fa-solid fa-arrow-up text-[10px] ml-0.5"></i>۱۲٪ افزایش نسبت به دیروز</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-file-prescription"></i>
+                </div>
+            </div>
+
+            <!-- Widget 2 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-400 block mb-1">نسخه‌های در انتظار بررسی</span>
+                    <span id="stat-pending-rx" class="text-2xl font-black text-amber-600">۴</span>
+                    <span class="text-xs text-amber-600 font-semibold block mt-1"><i class="fa-solid fa-clock text-[10px] ml-0.5"></i>نیازمند پاسخ فوری</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+            </div>
+
+            <!-- Widget 3 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-400 block mb-1">تأیید و آماده تحویل</span>
+                    <span id="stat-approved-rx" class="text-2xl font-black text-emerald-600">۱۴</span>
+                    <span class="text-xs text-slate-500 font-medium block mt-1">تأیید شده برای بیمار</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+
+            <!-- Widget 4 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-400 block mb-1">هشدار کسری انبار</span>
+                    <span id="stat-low-stock" class="text-2xl font-black text-rose-600">۳</span>
+                    <span class="text-xs text-rose-600 font-semibold block mt-1"><i class="fa-solid fa-triangle-exclamation text-[10px] ml-0.5"></i>اقلام کم‌موجودی</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incoming Prescriptions Section -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-inbox text-brand-600"></i>
+                        <span>درخواست‌های جدید نسخه بیماران (استعلام زنده)</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">لیست نسخه‌های بارگذاری شده توسط کاربران در منطقه ورامین، پیشوا و قرچک</p>
+                </div>
+                <span class="bg-brand-50 text-brand-700 text-xs font-bold px-3 py-1.5 rounded-full border border-brand-200 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-brand-500 animate-ping"></span>
+                    بروزرسانی خودکار فعال است
+                </span>
+            </div>
+
+            <!-- Prescriptions Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead class="bg-slate-50 text-slate-500 font-bold text-xs uppercase border-b border-slate-100">
+                        <tr>
+                            <th class="py-3.5 px-4">کد / شناسه</th>
+                            <th class="py-3.5 px-4">اطلاعات بیمار</th>
+                            <th class="py-3.5 px-4">شهر / منطقه</th>
+                            <th class="py-3.5 px-4">تصویر نسخه / کد</th>
+                            <th class="py-3.5 px-4">زمان ثبت</th>
+                            <th class="py-3.5 px-4">وضعیت</th>
+                            <th class="py-3.5 px-4 text-center">عملیات پاسخگویی</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rx-table-body" class="divide-y divide-slate-100 text-slate-700">
+
+                        <!-- Row 1 -->
+                        <tr id="rx-row-101">
+                            <td class="py-4 px-4 font-extrabold text-slate-900">#RX-101</td>
+                            <td class="py-4 px-4">
+                                <div class="font-bold text-slate-800">علی رضایی</div>
+                                <div class="text-xs text-slate-400">۰۹۱۲۳۴۵۶۷۸۹</div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md font-semibold">ورامین</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <button type="button" onclick="previewRxModal('نسخه انسولین قلمی نوورپید - ۳ عدد', '#RX-101')" class="inline-flex items-center gap-1.5 text-xs text-brand-600 font-bold bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition">
+                                    <i class="fa-solid fa-image"></i>
+                                    <span>مشاهده تصویر</span>
+                                </button>
+                            </td>
+                            <td class="py-4 px-4 text-xs text-slate-500">۱۰ دقیقه پیش</td>
+                            <td class="py-4 px-4">
+                                <span id="rx-status-101" class="rx-status-badge bg-amber-50 text-amber-800 border border-amber-200 text-xs px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-hourglass-half"></i> در انتظار بررسی
+                                </span>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <div id="rx-actions-101" class="flex items-center justify-center gap-2">
+                                    <button type="button" onclick="updateRxStatus('101', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-1.5 px-3 rounded-lg transition">
+                                        تأیید موجودی
+                                    </button>
+                                    <button type="button" onclick="updateRxStatus('101', 'rejected')" class="bg-slate-100 hover:bg-rose-50 text-rose-600 font-bold text-xs py-1.5 px-3 rounded-lg transition">
+                                        عدم موجودی
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Row 2 -->
+                        <tr id="rx-row-102">
+                            <td class="py-4 px-4 font-extrabold text-slate-900">#RX-102</td>
+                            <td class="py-4 px-4">
+                                <div class="font-bold text-slate-800">مریم کاظمی</div>
+                                <div class="text-xs text-slate-400">۰۹۳۵۹۸۷۶۵۴۳</div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md font-semibold">پیشوا</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <button type="button" onclick="previewRxModal('نسخه شیرخشک آپتامیل ۲ - ۵ قوطی', '#RX-102')" class="inline-flex items-center gap-1.5 text-xs text-brand-600 font-bold bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition">
+                                    <i class="fa-solid fa-image"></i>
+                                    <span>مشاهده تصویر</span>
+                                </button>
+                            </td>
+                            <td class="py-4 px-4 text-xs text-slate-500">۲۵ دقیقه پیش</td>
+                            <td class="py-4 px-4">
+                                <span id="rx-status-102" class="rx-status-badge bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-check"></i> تأیید شده
+                                </span>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <span class="text-xs text-slate-400 font-medium">پاسخ ارسال شد</span>
+                            </td>
+                        </tr>
+
+                        <!-- Row 3 -->
+                        <tr id="rx-row-103">
+                            <td class="py-4 px-4 font-extrabold text-slate-900">#RX-103</td>
+                            <td class="py-4 px-4">
+                                <div class="font-bold text-slate-800">حسین نوری</div>
+                                <div class="text-xs text-slate-400">۰۹۱۹۱۱۱۲۲۳۳</div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <span class="bg-slate-100 text-slate-700 text-xs px-2.5 py-1 rounded-md font-semibold">قرچک</span>
+                            </td>
+                            <td class="py-4 px-4">
+                                <button type="button" onclick="previewRxModal('کد رهگیری نسخه الکترونیک: 8901234', '#RX-103')" class="inline-flex items-center gap-1.5 text-xs text-brand-600 font-bold bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition">
+                                    <i class="fa-solid fa-barcode"></i>
+                                    <span>مشاهده کد</span>
+                                </button>
+                            </td>
+                            <td class="py-4 px-4 text-xs text-slate-500">۴۰ دقیقه پیش</td>
+                            <td class="py-4 px-4">
+                                <span id="rx-status-103" class="rx-status-badge bg-amber-50 text-amber-800 border border-amber-200 text-xs px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-hourglass-half"></i> در انتظار بررسی
+                                </span>
+                            </td>
+                            <td class="py-4 px-4 text-center">
+                                <div id="rx-actions-103" class="flex items-center justify-center gap-2">
+                                    <button type="button" onclick="updateRxStatus('103', 'approved')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-1.5 px-3 rounded-lg transition">
+                                        تأیید موجودی
+                                    </button>
+                                    <button type="button" onclick="updateRxStatus('103', 'rejected')" class="bg-slate-100 hover:bg-rose-50 text-rose-600 font-bold text-xs py-1.5 px-3 rounded-lg transition">
+                                        عدم موجودی
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Inventory Stock Management Section -->
+        <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-100">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-brand-600"></i>
+                        <span>مدیریت موجودی انبار دارویی</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">ویرایش سریع تعداد و وضعیت استعلام آنلاین داروهای داروخانه افشار</p>
+                </div>
+
+                <!-- Stock Table Quick Search Filter -->
+                <div class="w-full sm:w-72 relative">
+                    <input type="text" id="inventory-search" placeholder="جستجوی سریع دارو در انبار..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 pr-9 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <i class="fa-solid fa-search absolute right-3 top-2.5 text-slate-400 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead class="bg-slate-50 text-slate-500 font-bold text-xs uppercase border-b border-slate-100">
+                        <tr>
+                            <th class="py-3.5 px-4">نام عمومی / تجاری دارو</th>
+                            <th class="py-3.5 px-4">دسته‌بندی</th>
+                            <th class="py-3.5 px-4">موجودی انبار</th>
+                            <th class="py-3.5 px-4">قیمت واحد (ریال)</th>
+                            <th class="py-3.5 px-4">وضعیت عرضه</th>
+                            <th class="py-3.5 px-4 text-center">تغییر سریع</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body" class="divide-y divide-slate-100 text-slate-700">
+
+                        <!-- Stock Item 1 -->
+                        <tr class="inventory-row" data-name="انسولین نوورپید قلمی flexpen">
+                            <td class="py-3.5 px-4 font-bold text-slate-900">انسولین نوورپید قلمی (FlexPen)</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-500">غدد و دیابت</td>
+                            <td class="py-3.5 px-4 font-extrabold text-slate-800">
+                                <span id="qty-1">45</span> عدد
+                            </td>
+                            <td class="py-3.5 px-4 font-semibold text-slate-600">۷۵۰,۰۰۰</td>
+                            <td class="py-3.5 px-4">
+                                <span id="status-badge-1" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-md">موجود</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button type="button" onclick="adjustQty(1, 10)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-brand-100 hover:text-brand-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        +۱۰
+                                    </button>
+                                    <button type="button" onclick="adjustQty(1, -10)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        -۱۰
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Stock Item 2 -->
+                        <tr class="inventory-row" data-name="انسولین لانتوس سولوستار solostar">
+                            <td class="py-3.5 px-4 font-bold text-slate-900">انسولین لانتوس (Lantus)</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-500">غدد و دیابت</td>
+                            <td class="py-3.5 px-4 font-extrabold text-slate-800">
+                                <span id="qty-2">5</span> عدد
+                            </td>
+                            <td class="py-3.5 px-4 font-semibold text-slate-600">۸۲۰,۰۰۰</td>
+                            <td class="py-3.5 px-4">
+                                <span id="status-badge-2" class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-md">موجودی کم</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button type="button" onclick="adjustQty(2, 5)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-brand-100 hover:text-brand-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        +۵
+                                    </button>
+                                    <button type="button" onclick="adjustQty(2, -5)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        -۵
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Stock Item 3 -->
+                        <tr class="inventory-row" data-name="امپرازول کپسول اومپرازول">
+                            <td class="py-3.5 px-4 font-bold text-slate-900">کپسول اومپرازول ۲۰ میلی‌گرم</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-500">گوارش</td>
+                            <td class="py-3.5 px-4 font-extrabold text-slate-800">
+                                <span id="qty-3">120</span> بسته
+                            </td>
+                            <td class="py-3.5 px-4 font-semibold text-slate-600">۲۵۰,۰۰۰</td>
+                            <td class="py-3.5 px-4">
+                                <span id="status-badge-3" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-md">موجود</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button type="button" onclick="adjustQty(3, 20)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-brand-100 hover:text-brand-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        +۲۰
+                                    </button>
+                                    <button type="button" onclick="adjustQty(3, -20)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        -۲۰
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Stock Item 4 -->
+                        <tr class="inventory-row" data-name="شیرخشک آپتامیل 2 aptamil">
+                            <td class="py-3.5 px-4 font-bold text-slate-900">شیرخشک آپتامیل ۲</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-500">مکمل و اطفال</td>
+                            <td class="py-3.5 px-4 font-extrabold text-slate-800">
+                                <span id="qty-4">0</span> قوطی
+                            </td>
+                            <td class="py-3.5 px-4 font-semibold text-slate-600">۱,۱۰۰,۰۰۰</td>
+                            <td class="py-3.5 px-4">
+                                <span id="status-badge-4" class="bg-rose-50 text-rose-700 text-xs font-bold px-2.5 py-1 rounded-md">ناموجود</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button type="button" onclick="adjustQty(4, 10)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-brand-100 hover:text-brand-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        +۱۰
+                                    </button>
+                                    <button type="button" onclick="adjustQty(4, -10)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">
+                                        -۱۰
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Previewing Prescription Image -->
+    <div id="rx-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 id="modal-title" class="font-bold text-slate-800">مشاهده نسخه</h3>
+                <button type="button" onclick="closeRxModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="bg-slate-100 rounded-2xl p-6 text-center border border-slate-200">
+                <div class="w-16 h-16 bg-brand-100 text-brand-600 rounded-2xl flex items-center justify-center mx-auto text-3xl mb-3">
+                    <i class="fa-solid fa-file-medical"></i>
+                </div>
+                <div id="modal-content-text" class="text-sm font-bold text-slate-800">
+                    جزئیات نسخه
+                </div>
+            </div>
+
+            <button type="button" onclick="closeRxModal()" class="w-full bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-slate-900 transition">
+                بستن پنجره
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for Adding New Drug to Inventory -->
+    <div id="add-drug-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-brand-600"></i>
+                    <span>افزودن داروی جدید به لیست</span>
+                </h3>
+                <button type="button" onclick="closeAddDrugModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form id="add-drug-form" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">نام داروی جدید *</label>
+                    <input type="text" id="new-drug-name" required placeholder="مثلاً: قرص متفورمین ۵۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">دسته‌بندی</label>
+                        <input type="text" id="new-drug-cat" placeholder="عمومی / غدد" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">موجودی اولیه *</label>
+                        <input type="number" id="new-drug-qty" required value="50" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">قیمت واحد (ریال)</label>
+                    <input type="text" id="new-drug-price" placeholder="مثلاً: ۳۵۰,۰۰۰" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                        ثبت دارو در انبار
+                    </button>
+                    <button type="button" onclick="closeAddDrugModal()" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                        انصراف
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-xs text-center mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© ۲۰۲۵ دارومپ (DaruMap) | پنل مدیریت ویژه داروخانه‌های ورامین، پیشوا و قرچک</p>
+        </div>
+    </footer>
+
+    <!-- Interactive JS Functions -->
+    <script>
+        // Helper to convert Persian/Arabic digits to English digits
+        function faToEnDigits(str) {
+            return String(str).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[0-9]/g, d => d);
+        }
+
+        // Helper to convert English digits to Persian digits for display
+        function enToFaDigits(str) {
+            return String(str).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+        }
+
+        // Rx Status Update Logic
+        function updateRxStatus(id, action) {
+            const statusBadge = document.getElementById(`rx-status-${id}`);
+            const actionsDiv = document.getElementById(`rx-actions-${id}`);
+            const pendingStat = document.getElementById('stat-pending-rx');
+            const approvedStat = document.getElementById('stat-approved-rx');
+
+            if (action === 'approved') {
+                statusBadge.className = "rx-status-badge bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1";
+                statusBadge.innerHTML = `<i class="fa-solid fa-check"></i> تأیید شده`;
+                actionsDiv.innerHTML = `<span class="text-xs text-slate-400 font-medium">پاسخ ارسال شد</span>`;
+
+                if (pendingStat) {
+                    let currentVal = parseInt(faToEnDigits(pendingStat.textContent)) || 0;
+                    pendingStat.textContent = enToFaDigits(Math.max(0, currentVal - 1));
+                }
+                if (approvedStat) {
+                    let currentVal = parseInt(faToEnDigits(approvedStat.textContent)) || 0;
+                    approvedStat.textContent = enToFaDigits(currentVal + 1);
+                }
+            } else if (action === 'rejected') {
+                statusBadge.className = "rx-status-badge bg-rose-50 text-rose-800 border border-rose-200 text-xs px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1";
+                statusBadge.innerHTML = `<i class="fa-solid fa-xmark"></i> عدم موجودی`;
+                actionsDiv.innerHTML = `<span class="text-xs text-slate-400 font-medium">پاسخ ارسال شد</span>`;
+
+                if (pendingStat) {
+                    let currentVal = parseInt(faToEnDigits(pendingStat.textContent)) || 0;
+                    pendingStat.textContent = enToFaDigits(Math.max(0, currentVal - 1));
+                }
+            }
+        }
+
+        // Rx Modal Preview Logic
+        function previewRxModal(details, rxCode) {
+            const modal = document.getElementById('rx-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalText = document.getElementById('modal-content-text');
+
+            if (modalTitle) modalTitle.textContent = `جزئیات نسخه ${rxCode}`;
+            if (modalText) modalText.textContent = details;
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeRxModal() {
+            const modal = document.getElementById('rx-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // Inventory Qty Adjustment
+        function adjustQty(itemId, delta) {
+            const qtyElem = document.getElementById(`qty-${itemId}`);
+            const badgeElem = document.getElementById(`status-badge-${itemId}`);
+
+            if (qtyElem) {
+                let current = parseInt(qtyElem.textContent) || 0;
+                let nextVal = Math.max(0, current + delta);
+                qtyElem.textContent = nextVal;
+
+                if (badgeElem) {
+                    if (nextVal === 0) {
+                        badgeElem.className = "bg-rose-50 text-rose-700 text-xs font-bold px-2.5 py-1 rounded-md";
+                        badgeElem.textContent = "ناموجود";
+                    } else if (nextVal <= 10) {
+                        badgeElem.className = "bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-md";
+                        badgeElem.textContent = "موجودی کم";
+                    } else {
+                        badgeElem.className = "bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-md";
+                        badgeElem.textContent = "موجود";
+                    }
+                }
+            }
+        }
+
+        // Inventory Filter
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('inventory-search');
+            const rows = document.querySelectorAll('.inventory-row');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.trim().toLowerCase();
+                    rows.forEach(row => {
+                        const name = row.getAttribute('data-name') || '';
+                        if (name.toLowerCase().includes(query)) {
+                            row.classList.remove('hidden');
+                        } else {
+                            row.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+
+            // Add Drug Modal Form logic
+            const addDrugForm = document.getElementById('add-drug-form');
+            if (addDrugForm) {
+                addDrugForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('new-drug-name').value;
+                    const cat = document.getElementById('new-drug-cat').value || 'عمومی';
+                    const qty = document.getElementById('new-drug-qty').value || '0';
+                    const price = document.getElementById('new-drug-price').value || '۱۰۰,۰۰۰';
+
+                    const tbody = document.getElementById('inventory-table-body');
+                    const newId = Date.now();
+
+                    const newRow = document.createElement('tr');
+                    newRow.className = 'inventory-row';
+                    newRow.setAttribute('data-name', name.toLowerCase());
+                    newRow.innerHTML = `
+                        <td class="py-3.5 px-4 font-bold text-slate-900">${name}</td>
+                        <td class="py-3.5 px-4 text-xs text-slate-500">${cat}</td>
+                        <td class="py-3.5 px-4 font-extrabold text-slate-800">
+                            <span id="qty-${newId}">${qty}</span> عدد
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-600">${price}</td>
+                        <td class="py-3.5 px-4">
+                            <span id="status-badge-${newId}" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-md">موجود</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button type="button" onclick="adjustQty('${newId}', 10)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-brand-100 hover:text-brand-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">+۱۰</button>
+                                <button type="button" onclick="adjustQty('${newId}', -10)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 font-bold transition flex items-center justify-center text-xs">-۱۰</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.prepend(newRow);
+                    closeAddDrugModal();
+                    addDrugForm.reset();
+                });
+            }
+        });
+
+        function openAddDrugModal() {
+            document.getElementById('add-drug-modal')?.classList.remove('hidden');
+        }
+
+        function closeAddDrugModal() {
+            document.getElementById('add-drug-modal')?.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
